@@ -42,7 +42,7 @@
 -include("logger.hrl").
 
 start(Host, Opts) ->
-    ?INFO_MSG("Starting mod_unavailable_post", [] ),
+    %%% ?INFO_MSG("Starting mod_unavailable_post", [] ),
     register(?PROCNAME,spawn(?MODULE, init, [Host, Opts])),  
     ok.
 
@@ -54,7 +54,7 @@ init(Host, _Opts) ->
     ok.
 
 stop(Host) ->
-    ?INFO_MSG("Stopping mod_unavailable_post", [] ),
+    %%% ?INFO_MSG("Stopping mod_unavailable_post", [] ),
     ejabberd_hooks:delete(unset_presence_hook, Host,
 			  ?MODULE, send_unavailable_notice, 10),
     ok.
@@ -67,7 +67,7 @@ send_unavailable_notice(User, Server, _Resource, _Status) ->
 	      Post = [
 	        "jabber_id=", User, Sep,
 	        "access_token=", Token ],
-	      ?INFO_MSG("Sending post request ~p~n",[Post] ),
+	      %%% ?INFO_MSG("Sending post request ~p~n",[Post] ),
 	      httpc:request(post, {binary_to_list(PostUrl), [], "application/x-www-form-urlencoded", list_to_binary(Post)},[],[]),
 	      ok;
 	    true ->
