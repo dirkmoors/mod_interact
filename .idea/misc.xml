@@ -4,11 +4,6 @@
     <includedPredefinedLibrary name="WebGL" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 2.7.6 (C:/Python27x64/python.exe)" project-jdk-type="Python SDK" />
-  <component name="PyConsoleOptionsProvider">
-    <option name="myPythonConsoleState">
-      <console-settings />
-    </option>
-  </component>
   <component name="SvnConfiguration" maxAnnotateRevisions="500" myUseAcceleration="nothing" myAutoUpdateAfterCommit="false" cleanupOnStartRun="false" SSL_PROTOCOLS="all">
     <option name="USER" value="" />
     <option name="PASSWORD" value="" />

@@ -30,16 +30,14 @@
 
 -behaviour(gen_mod).
 
--export([start/2,
-	 %%% init/2,
-	 stop/1,
-	 send_notice/3]).
+-export([start/2, stop/1]).
+-export([on_user_send_packet/3]).
 
 -define(PROCNAME, ?MODULE).
 
 -include("ejabberd.hrl").
 -include("jlib.hrl").
--include("logger.hrl").
+%% -include("logger.hrl").
 
 %% start(Host, Opts) ->
 %%     %%% ?INFO_MSG("Starting mod_offline_post", [] ),
@@ -53,18 +51,22 @@
 %%     ok.
 
 start(Host, _Opts) ->
-    ?INFO_MSG("Starting mod_offline_post", [] ),
+    ?INFO_MSG("mod_user_send_packet_post starting", []),
     inets:start(),
     ssl:start(),
-    ejabberd_hooks:add(user_send_packet, Host, ?MODULE, send_notice, 10),
+    ejabberd_hooks:add(user_send_packet, Host, ?MODULE, on_user_send_packet, 0),
     ok.
 
 stop(Host) ->
-    ?INFO_MSG("Stopping mod_offline_post", [] ),
-    ejabberd_hooks:delete(user_send_packet, Host, ?MODULE, send_notice, 10),
+    ?INFO_MSG("mod_user_send_packet_post stopping", []),
+    ejabberd_hooks:delete(user_send_packet, Host, ?MODULE, on_user_send_packet, 0),
     ok.
 
-send_notice(From, To, Packet) ->
+on_user_send_packet(From, To, Packet) ->
+    forward_packet(From, To, Packet),
+    Packet.
+
+forward_packet(From, To, Packet) ->
     Type = xml:get_tag_attr_s(list_to_binary("type"), Packet),
     Body = xml:get_path_s(Packet, [{elem, list_to_binary("body")}, cdata]),
     Token = gen_mod:get_module_opt(To#jid.lserver, ?MODULE, auth_token, fun(S) -> iolist_to_binary(S) end, list_to_binary("")),
@@ -77,7 +79,6 @@ send_notice(From, To, Packet) ->
           "from=", From#jid.luser, Sep,
           "body=", url_encode(binary_to_list(Body)), Sep,
           "access_token=", Token],
-        ?INFO_MSG("Sending post request to ~s with body \"~s\"", [PostUrl, Post]),
         httpc:request(post, {binary_to_list(PostUrl), [], "application/x-www-form-urlencoded", list_to_binary(Post)},[],[]),
         ok;
       true ->
