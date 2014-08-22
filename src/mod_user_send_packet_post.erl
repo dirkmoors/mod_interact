@@ -31,7 +31,7 @@
 -behaviour(gen_mod).
 
 -export([start/2,
-	 init/2,
+	 %%% init/2,
 	 stop/1,
 	 send_notice/3]).
 
@@ -41,21 +41,27 @@
 -include("jlib.hrl").
 -include("logger.hrl").
 
-start(Host, Opts) ->
-    %%% ?INFO_MSG("Starting mod_offline_post", [] ),
-    register(?PROCNAME,spawn(?MODULE, init, [Host, Opts])),  
-    ok.
+%% start(Host, Opts) ->
+%%     %%% ?INFO_MSG("Starting mod_offline_post", [] ),
+%%     register(?PROCNAME,spawn(?MODULE, init, [Host, Opts])),
+%%     ok.
 
-init(Host, _Opts) ->
+%% init(Host, _Opts) ->
+%%     inets:start(),
+%%     ssl:start(),
+%%     ejabberd_hooks:add(user_send_packet, Host, ?MODULE, send_notice, 10),
+%%     ok.
+
+start(Host, _Opts) ->
+    ?INFO_MSG("Starting mod_offline_post", [] ),
     inets:start(),
     ssl:start(),
     ejabberd_hooks:add(user_send_packet, Host, ?MODULE, send_notice, 10),
     ok.
 
 stop(Host) ->
-    %%% ?INFO_MSG("Stopping mod_offline_post", [] ),
-    ejabberd_hooks:delete(user_send_packet, Host,
-			  ?MODULE, send_notice, 10),
+    ?INFO_MSG("Stopping mod_offline_post", [] ),
+    ejabberd_hooks:delete(user_send_packet, Host, ?MODULE, send_notice, 10),
     ok.
 
 send_notice(From, To, Packet) ->
@@ -71,7 +77,7 @@ send_notice(From, To, Packet) ->
           "from=", From#jid.luser, Sep,
           "body=", url_encode(binary_to_list(Body)), Sep,
           "access_token=", Token],
-        %%% ?INFO_MSG("Sending post request to ~s with body \"~s\"", [PostUrl, Post]),
+        ?INFO_MSG("Sending post request to ~s with body \"~s\"", [PostUrl, Post]),
         httpc:request(post, {binary_to_list(PostUrl), [], "application/x-www-form-urlencoded", list_to_binary(Post)},[],[]),
         ok;
       true ->
