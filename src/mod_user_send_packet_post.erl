@@ -52,14 +52,14 @@
 %%     ok.
 
 start(Host, _Opts) ->
-    ?INFO_MSG("mod_user_send_packet_post starting", []),
+    %% ?INFO_MSG("mod_user_send_packet_post starting", []),
     inets:start(),
     ssl:start(),
     ejabberd_hooks:add(user_send_packet, Host, ?MODULE, on_user_send_packet, 0),
     ok.
 
 stop(Host) ->
-    ?INFO_MSG("mod_user_send_packet_post stopping", []),
+    %% ?INFO_MSG("mod_user_send_packet_post stopping", []),
     ejabberd_hooks:delete(user_send_packet, Host, ?MODULE, on_user_send_packet, 0),
     ok.
 
