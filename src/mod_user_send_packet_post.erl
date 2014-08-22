@@ -30,14 +30,15 @@
 
 -behaviour(gen_mod).
 
--export([start/2, stop/1]).
--export([on_user_send_packet/3]).
+-export([start/2,
+  stop/1,
+  on_user_send_packet/3]).
 
 -define(PROCNAME, ?MODULE).
 
 -include("ejabberd.hrl").
 -include("jlib.hrl").
-%% -include("logger.hrl").
+-include("logger.hrl").
 
 %% start(Host, Opts) ->
 %%     %%% ?INFO_MSG("Starting mod_offline_post", [] ),
